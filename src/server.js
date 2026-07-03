@@ -11,14 +11,15 @@ const qrRoutes = require('./routes/qr');
 
 const app = express();
 
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const allowedOriginsRaw = (process.env.ALLOWED_ORIGINS || '').trim();
+const corsOrigin =
+  allowedOriginsRaw === '*'
+    ? true
+    : allowedOriginsRaw.split(',').map((origin) => origin.trim()).filter(Boolean);
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(cors({ origin: corsOrigin, credentials: true }));
 app.use(express.json({ limit: '32kb' }));
 app.use(cookieParser());
 app.use(attachUser);
